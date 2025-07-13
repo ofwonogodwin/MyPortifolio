@@ -300,6 +300,7 @@ body.dark-mode .navbar {
     position: relative;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     border: 4px solid var(--primary-color);
+    cursor: pointer;
 }
 
 .profile-image img {
@@ -312,6 +313,36 @@ body.dark-mode .navbar {
 
 .profile-image:hover img {
     transform: scale(1.05);
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-medium);
+    color: white;
+    font-weight: 500;
+}
+
+.profile-image:hover .image-overlay {
+    opacity: 1;
+}
+
+.image-overlay i {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.image-overlay span {
+    font-size: 0.9rem;
 }
 
 .scroll-indicator {

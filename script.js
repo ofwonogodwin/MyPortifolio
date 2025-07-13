@@ -5,6 +5,145 @@ const navMenu = document.getElementById('nav-menu');
 const backToTop = document.getElementById('backToTop');
 const navLinks = document.querySelectorAll('.nav-link');
 
+// Profile Image Management
+class ProfileImageManager {
+    constructor() {
+        this.initImageUpload();
+    }
+
+    initImageUpload() {
+        const profileImageContainer = document.getElementById('profileImageContainer');
+        const imageInput = document.getElementById('imageInput');
+        const profileImg = document.getElementById('profileImg');
+
+        if (profileImageContainer && imageInput && profileImg) {
+            // Click on profile image to open file browser
+            profileImageContainer.addEventListener('click', () => {
+                imageInput.click();
+            });
+
+            // Handle file selection
+            imageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    this.handleImageUpload(file, profileImg);
+                }
+            });
+
+            // Drag and drop functionality
+            profileImageContainer.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                profileImageContainer.style.opacity = '0.8';
+            });
+
+            profileImageContainer.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                profileImageContainer.style.opacity = '1';
+            });
+
+            profileImageContainer.addEventListener('drop', (e) => {
+                e.preventDefault();
+                profileImageContainer.style.opacity = '1';
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.type.startsWith('image/')) {
+                        this.handleImageUpload(file, profileImg);
+                    } else {
+                        this.showNotification('Please select a valid image file', 'error');
+                    }
+                }
+            });
+        }
+    }
+
+    handleImageUpload(file, imgElement) {
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            this.showNotification('File size should be less than 5MB', 'error');
+            return;
+        }
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            this.showNotification('Please select a valid image file', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            imgElement.src = e.target.result;
+            this.showNotification('Profile picture updated successfully!', 'success');
+
+            // Save to localStorage for persistence
+            localStorage.setItem('profileImage', e.target.result);
+        };
+
+        reader.onerror = () => {
+            this.showNotification('Error reading the file', 'error');
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    loadSavedImage() {
+        const savedImage = localStorage.getItem('profileImage');
+        const profileImg = document.getElementById('profileImg');
+
+        if (savedImage && profileImg) {
+            profileImg.src = savedImage;
+        }
+    }
+
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+
+        // Style the notification
+        Object.assign(notification.style, {
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            padding: '12px 20px',
+            borderRadius: '8px',
+            color: 'white',
+            fontWeight: '500',
+            zIndex: '9999',
+            transform: 'translateX(400px)',
+            transition: 'transform 0.3s ease',
+            maxWidth: '300px'
+        });
+
+        // Set background color based on type
+        const colors = {
+            success: '#10b981',
+            error: '#ef4444',
+            info: '#3b82f6'
+        };
+        notification.style.backgroundColor = colors[type] || colors.info;
+
+        document.body.appendChild(notification);
+
+        // Animate in
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.style.transform = 'translateX(400px)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+}
+
 // Theme Management
 class ThemeManager {
     constructor() {
@@ -473,11 +612,15 @@ class CursorManager {
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize all managers
+    const profileImageManager = new ProfileImageManager();
     const themeManager = new ThemeManager();
     const navigationManager = new NavigationManager();
     const animationManager = new AnimationManager();
     const utilityManager = new UtilityManager();
     const performanceManager = new PerformanceManager();
+
+    // Load saved profile image if exists
+    profileImageManager.loadSavedImage();
 
     // Initialize custom cursor only on desktop
     if (window.innerWidth > 768) {
@@ -499,6 +642,7 @@ document.addEventListener('DOMContentLoaded', () => {
     📱 Responsive Design
     🌙 Dark Mode Support
     ♿ Accessibility Features
+    📷 Dynamic Profile Image Upload
     
     Feel free to explore the code!
     `);

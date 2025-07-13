@@ -57,8 +57,13 @@
             </div>
             <div class="hero-image fade-in">
                 <div class="profile-card">
-                    <div class="profile-image">
-                        <img src="ofwono.jpeg" alt="Godwin Ofwono - Software Engineering Student" />
+                    <div class="profile-image" id="profileImageContainer">
+                        <img src="ofwono.jpeg" alt="Godwin Ofwono - Software Engineering Student" id="profileImg" />
+                        <div class="image-overlay">
+                            <i class="fas fa-camera"></i>
+                            <span>Change Photo</span>
+                        </div>
+                        <input type="file" id="imageInput" accept="image/*" style="display: none;">
                     </div>
                 </div>
             </div>
